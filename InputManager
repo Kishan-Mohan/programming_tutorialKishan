@@ -1,0 +1,52 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public  static class InputManager
+{
+    private static GameControls _gameControls; 
+    public static void Init(Player myPlayer)
+    {
+        _gameControls = new GameControls(); //calling new game controls
+        _gameControls.Permanent.Enable();  
+        _gameControls.Ingame.Movement.performed += WASD =>
+       {
+           myPlayer.SetMovementDirection(WASD.ReadValue<Vector3>()); //setting the WASD keys
+        };
+        _gameControls.Ingame.JUMP.started += Jump =>
+        {
+            myPlayer.Jump(); // calling the jump
+            Debug.Log("I JUMP"); //cube tells you that it jumps 
+
+        };
+
+        Debug.Log("WASD to move. Space bar is to jump. Explaination is under the InputManager code");
+        //Introduction to project 
+    }
+    public static void SetGameControls()
+    {
+        _gameControls.Ingame.Enable();
+        _gameControls.UI.Disable();
+    }
+    public static void SetUIControls()
+    {
+        _gameControls.UI.Enable();
+        _gameControls.Ingame.Disable();
+    }
+}
+
+/*  
+ *  I made two folders in Unity called Character and Managers. 
+ *  In the character folder I created a C# script called Player
+ *  In the Managers folder I created a C# script called InputManager
+ *  then we made a Input action called GameContents. 
+ *  We set the actions to make the player use WASD and SPACE keys to make the cube jump
+ *  I opened the InputManager script and coded the following
+ *  The Init method is coded to connect the WASD and SPACE keys
+ *  calling myPlayer in the brackets we use it to call of variables, in this case we called 
+ *  the keys to move and jump
+ *  The SetGameControls to Enable Ingame controls and Disable the UI
+ *  The SetUIControls to Enable UI controls and Disable the Ingame 
+ *  
+ */  
