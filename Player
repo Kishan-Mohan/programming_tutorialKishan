@@ -1,0 +1,67 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
+
+public class Player : MonoBehaviour
+{
+    
+    
+   [SerializeField] public float speed; // speed of the cube 
+   [SerializeField] public float jumpForce; //height of the cube when it jumps 
+ 
+
+    private Rigidbody rb; //rigidbody = gravity for the cube 
+    private Vector3 _moveDirection; // cube is moving directions
+    private bool isGrounded; //cube is on or off the ground
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        InputManager.Init(myPlayer:this); //used to call Init method from InputManager class
+        InputManager.SetGameControls(); //used to call SetGameControls method from InputManager class
+        rb = GetComponent<Rigidbody>(); //used to call GetComponent method from InputManager class
+    }
+
+    // Update is called once per frame
+  
+    void Update()
+    {
+        transform.position += speed * Time.deltaTime * _moveDirection; //changing position of the cube
+        CheckGround(); 
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);        
+            isGrounded = false;
+            //The Math to calculate the jump height and when the cube lands on the ground
+        }
+    }
+      
+    public void SetMovementDirection(Vector3 newDirection)
+    {
+        _moveDirection = newDirection; //setting new directions everytime cube moves
+        
+    }
+    public void Jump()
+    {
+        Debug.Log("jump called"); 
+        //when space is pressed printing statement to confirm that jump is called
+        if (isGrounded)
+        {
+            Debug.Log("I actually jumped"); //printing statement to confirm the cube jumped
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); //cube jumped
+            
+        }
+    }
+    private void CheckGround()
+    {
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, GetComponent<Collider>().bounds.size.y);
+        Debug.DrawRay(transform.position, Vector3.down * GetComponent<Collider>().bounds.size.y, 
+            Color.green, 0, false); 
+        //collision 
+    
+    }
+}
