@@ -21,7 +21,7 @@ public  static class InputManager
 
         };
 
-        Debug.Log("WASD to move. Space bar is to jump. Explaination is under the InputManager code");
+        Debug.Log("WASD to move. Space bar is to jump.");
         //Introduction to project 
     }
     public static void SetGameControls()
