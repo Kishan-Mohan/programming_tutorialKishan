@@ -11,11 +11,14 @@ public class Player : MonoBehaviour
     
    [SerializeField] public float speed; // speed of the cube 
    [SerializeField] public float jumpForce; //height of the cube when it jumps 
- 
+
+    [SerializeField] public int scoreAdd;
 
     private Rigidbody rb; //rigidbody = gravity for the cube 
     private Vector3 _moveDirection; // cube is moving directions
     private bool isGrounded; //cube is on or off the ground
+  
+    private int coinCount; //counting the coins you collect 
 
     // Start is called before the first frame update
     void Start()
@@ -47,11 +50,11 @@ public class Player : MonoBehaviour
     }
     public void Jump()
     {
-        Debug.Log("jump called"); 
+        //Debug.Log("jump called"); 
         //when space is pressed printing statement to confirm that jump is called
         if (isGrounded)
         {
-            Debug.Log("I actually jumped"); //printing statement to confirm the cube jumped
+           // Debug.Log("I actually jumped"); //printing statement to confirm the cube jumped
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); //cube jumped
             
         }
@@ -62,6 +65,11 @@ public class Player : MonoBehaviour
         Debug.DrawRay(transform.position, Vector3.down * GetComponent<Collider>().bounds.size.y, 
             Color.green, 0, false); 
         //collision 
-    
     }
+
+    public void ScoreAdd()
+    {
+        scoreAdd++; 
+    }
+
 }
