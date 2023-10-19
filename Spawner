@@ -1,0 +1,36 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor.IMGUI.Controls;
+using UnityEngine;
+
+public class Spawner : MonoBehaviour
+{
+    public GameObject[] Candies; 
+    //array for the candies
+
+    public float xBound, yBound;
+    //coordinates of where candies will drop in the screen 
+    
+    void Start()
+    {
+        StartCoroutine(SpawnRandomGameObject());
+        //to call the spawn method below
+    }
+    IEnumerator SpawnRandomGameObject()
+    {
+        yield return new WaitForSeconds(Random.Range(-2, 2));
+        //setting the range to drop candies 
+
+        int randomCandy = Random.Range(0, Candies.Length); //get random candy
+
+        if(Random.value <= 0.6f)
+        {
+            Instantiate(Candies[randomCandy], 
+                new Vector2(Random.Range(-xBound, xBound), yBound), Quaternion.identity); 
+            //showing where candy will be spawned in the screen
+        }
+        StartCoroutine(SpawnRandomGameObject());
+    }
+
+    
+}
