@@ -1,0 +1,45 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Monster : MonoBehaviour
+{
+    private Rigidbody2D rb; //physics, rigidbody call 
+    public float speed; //speed of monster
+    public float xBound; //screen boundaries
+
+
+    
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();   
+        // calling rigidbody for game physics
+    }
+
+    
+    void FixedUpdate()
+    {
+        float h = Input.GetAxis("Horizontal"); 
+            //knowing that the movement is horizontal
+
+        Debug.Log(h); //prints the position on console
+
+        if (h > 0)
+        {
+            rb.velocity = Vector2.right * speed; 
+            //movement to the right
+        }
+        else if(h < 0){
+            rb.velocity = Vector2.left * speed;
+            //movement to the left 
+        }
+        else
+        {
+            rb.velocity = Vector2.zero;    
+            //player remains on the spot if they don't move
+        }
+        transform.position = new Vector2(Mathf.Clamp(transform.position.x, -xBound, xBound),
+            transform.position.y); //sorting out collision with the screen
+                                   
+    }
+}
