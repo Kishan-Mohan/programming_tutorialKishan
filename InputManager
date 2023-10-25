@@ -3,27 +3,48 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public  static class InputManager
+public static class InputManager
 {
-    private static GameControls _gameControls; 
+    private static GameControls _gameControls;
+    private static object ctx;
+
     public static void Init(Player myPlayer)
     {
         _gameControls = new GameControls(); //calling new game controls
-        _gameControls.Permanent.Enable();  
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
+
+        _gameControls.Permanent.Enable();
         _gameControls.Ingame.Movement.performed += WASD =>
        {
            myPlayer.SetMovementDirection(WASD.ReadValue<Vector3>()); //setting the WASD keys
-        };
+       };
         _gameControls.Ingame.JUMP.started += Jump =>
         {
             myPlayer.Jump(); // calling the jump
             Debug.Log("I JUMP"); //cube tells you that it jumps 
-
         };
 
-        Debug.Log("WASD to move. Space bar is to jump.");
-        //Introduction to project 
-    }
+        _gameControls.Ingame.Look.performed += look => //function to access input to move camera
+        {
+            myPlayer.SetMovementDirection(look.ReadValue<Vector2>());
+        };
+
+        _gameControls.Ingame.Shoot.performed += Shoot =>    //function to access input to shoot
+        {
+            myPlayer.Shoot();
+        };
+
+        _gameControls.Ingame.Reload.performed += Reload =>  //function to access input to reload
+        {
+            myPlayer.Reload();
+         };
+
+            Debug.Log("WASD to move. Space bar is to jump.");
+            //Introduction to project 
+
+        }
     public static void SetGameControls()
     {
         _gameControls.Ingame.Enable();
@@ -34,6 +55,7 @@ public  static class InputManager
         _gameControls.UI.Enable();
         _gameControls.Ingame.Disable();
     }
+
 }
 
 /*  
