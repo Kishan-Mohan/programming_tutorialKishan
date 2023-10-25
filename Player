@@ -1,18 +1,57 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
+using UnityEngine.UI;
+//using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class Player : MonoBehaviour
 {
-    
-    
-   [SerializeField] public float speed; // speed of the cube 
-   [SerializeField] public float jumpForce; //height of the cube when it jumps 
+
+
+    [SerializeField] public float speed; // speed of the cube 
+    [SerializeField] public float jumpForce; //height of the cube when it jumps 
 
     [SerializeField] public int scoreAdd;
+
+    [Header("Camera")]
+    [SerializeField, Range(1, 20)] private float mouseSensX; // to use the mouse to rotate camera
+    [SerializeField, Range(1, 20)] private float mouseSensY;
+
+    [SerializeField, Range(1, 180)] private float minViewAngle; // to use the mouse to rotate camera
+    [SerializeField, Range(1, 180)] private float maxViewAngle;
+    [SerializeField] private Transform lookAtPoint;
+
+    [Header("Shooting")]
+    public int maxAmmo = 10; // max ammo variable
+    public int currentAmmo; // current ammo variable 
+    public float reloadTime = 1f; //setting the reload time 
+    private bool isReloading = false; //variable to confirm if the player is reloading 
+    [SerializeField] private Rigidbody bulletPrefab; // bullet 3d sprite
+    [SerializeField] private float bulletForce; //the force on how far the bullet is flying after one left mouse click
+
+    [Header("Player UI")]
+    [SerializeField] private Image healthBar; //image of the health bar
+    [SerializeField] private TextMeshProUGUI shotsFired; //shots fired text
+    [SerializeField] private float maxHealth; // variable for max health
+    private int shotsFiredCounter; // variable for the shots fired counter
+    private float _health; // variable for health
+
+    private float Health
+    {
+        get => _health; // getting health 
+        set
+        {
+            _health = value;
+            healthBar.fillAmount = _health / maxHealth; // setting the max fill amount on the health bar 
+        }
+    }
+
+   
+    private Vector2 currentRotation; //to show that rotation is the current rotation
 
     private Rigidbody rb; //rigidbody = gravity for the cube 
     private Vector3 _moveDirection; // cube is moving directions
@@ -26,13 +65,22 @@ public class Player : MonoBehaviour
         InputManager.Init(myPlayer:this); //used to call Init method from InputManager class
         InputManager.SetGameControls(); //used to call SetGameControls method from InputManager class
         rb = GetComponent<Rigidbody>(); //used to call GetComponent method from InputManager class
+
+        Health = maxHealth; // health is set to the max health when game starts
+        currentAmmo = maxAmmo; //setting that current ammo equals to the max ammo
     }
 
     // Update is called once per frame
   
     void Update()
     {
+        if (isReloading)
+        {
+            return; 
+        }
+        
         transform.position += speed * Time.deltaTime * _moveDirection; //changing position of the cube
+        transform.position += transform.rotation * (speed * Time.deltaTime * _moveDirection); 
         CheckGround(); 
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -41,6 +89,15 @@ public class Player : MonoBehaviour
             isGrounded = false;
             //The Math to calculate the jump height and when the cube lands on the ground
         }
+
+        if (Input.GetKeyDown(KeyCode.R) && currentAmmo <= 0)
+        {
+            Reload(); 
+            // calling the reload function if the player runs out of bullets 
+            return; 
+        }
+
+        Health -= Time.deltaTime * 5; // health is decreasing every delta time times 5 
     }
       
     public void SetMovementDirection(Vector3 newDirection)
@@ -67,9 +124,58 @@ public class Player : MonoBehaviour
         //collision 
     }
 
+    
+
     public void ScoreAdd()
     {
-        scoreAdd++; 
+        scoreAdd++; // counter to add the score each time a coin is collected by the p[layer (cube)
     }
 
+    public void SetMovementDirection(Vector2 readValue)
+    {
+        currentRotation.x += readValue.x *Time.deltaTime * mouseSensX; 
+        // variables for camera rotation on x axis 
+        currentRotation.y += readValue.y * Time.deltaTime * mouseSensY;
+        // varaibles for camera rotation on y axis 
+
+        
+        //Rotates left and right 
+        transform.rotation = Quaternion.AngleAxis(currentRotation.x, Vector3.up);
+
+        //Clamp rotation angle so you can't roll your head
+        currentRotation.y = Mathf.Clamp(currentRotation.y, minViewAngle, maxViewAngle);
+
+        //rotate up and down
+        lookAtPoint.localRotation = Quaternion.AngleAxis(currentRotation.y, Vector3.right); 
+    }
+    private bool fireState; 
+
+    public void Shoot()
+    {
+
+        currentAmmo--; 
+        // showing a counter that the current ammo will decrease by 1 everytime player fires
+        
+        Rigidbody currentProjectile = Instantiate(bulletPrefab, transform.position, Quaternion.identity); 
+        //spawn the object as a rigidbody
+        
+       currentProjectile.AddForce(lookAtPoint.forward * bulletForce, ForceMode.Impulse); 
+        //add instant force in the look at direction of the player
+
+        shotsFiredCounter++; //the shots fired counter adding up
+
+        shotsFired.text = shotsFiredCounter.ToString(); //text of shots fired
+
+       Destroy(currentProjectile.gameObject, 4); //Destory after 4 seconds
+        
+    }
+    public void Reload()
+    {
+        isReloading = true; // player is reloading 
+        
+        print("reloading..."); // prints in console that player is reloading 
+
+        currentAmmo = maxAmmo; // set the ammo back to max
+        isReloading = false; //stop reloading after ammo is back to max 
+    }
 }
