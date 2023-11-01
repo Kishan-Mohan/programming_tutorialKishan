@@ -1,0 +1,17 @@
+using Cinemachine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ProjectileWeapon : WeaponsBase
+{
+    [SerializeField] private Rigidbody f; //rigidbody
+    [SerializeField] private float force = 50; //force variable 
+    protected override void Attack(float percent)
+    {
+        Debug.Log("My weapon attacked: " + percent); //console print statement
+        Ray camRay = InputManager.GetCameraRay(); // follow with the camera 
+        Rigidbody rb = Instantiate(f, camRay.origin, transform.rotation); //set rigidbody
+        rb.AddForce(camRay.direction*force, ForceMode.Impulse); //force of the projectile after player shoots
+    }
+}
