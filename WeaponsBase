@@ -1,0 +1,81 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+
+public abstract class WeaponsBase : MonoBehaviour
+{
+    //variables 
+    [Header("Weapon Base Stats")]
+    [SerializeField] protected float timeBetweenAttacks;
+    [SerializeField] protected float chargeUpTime;
+    [SerializeField, Range(0,1)] protected float minChargePercent;
+    [SerializeField] private bool isFullyAuto; //is firing fully auto
+
+    private Coroutine _currentFireTimer; //timer to count up the bullets 
+    private bool _isOnCoolDown; //cool down after firing 
+    private float _currentChargeTime; 
+
+    private WaitForSeconds _coolDownWait;
+    private WaitUntil _coolDownEnforce;    
+
+    private void Start()
+    {
+        _coolDownWait = new WaitForSeconds(timeBetweenAttacks); 
+        _coolDownEnforce = new WaitUntil(() => !_isOnCoolDown);
+    }
+    public void StartShooting()
+    {
+       _currentFireTimer = StartCoroutine(ReFireTimer()); //finction to start shooting
+    }
+    public void StopShooting()
+    {
+        StopCoroutine(_currentFireTimer);
+
+        float percent = _currentChargeTime / chargeUpTime;   //function to stop shooting 
+        if(percent != 0) TryAttack(percent);
+    }
+  
+
+    private IEnumerator CooldownTimer()
+    {
+        _isOnCoolDown = true;
+        yield return new WaitForSeconds(timeBetweenAttacks); //cooldown function
+        _isOnCoolDown = false; 
+    }
+
+    private IEnumerator ReFireTimer()
+    {
+        print("Waiting for coolDown"); 
+        yield return _coolDownEnforce;
+        print("Post cooldown");
+
+        while (_currentChargeTime < chargeUpTime)
+        {
+            _currentChargeTime += Time.deltaTime; //refire to delta time 
+            yield return null; 
+        }
+
+        TryAttack(1); 
+        yield return null; 
+    }
+    private void TryAttack(float percent)
+    {
+        _currentChargeTime = 0;
+        if (!CanAttack(percent)) return; //not firing return nothing
+
+        Attack(percent);
+
+        StartCoroutine(CooldownTimer());
+
+        if (isFullyAuto && percent >= 1) _currentFireTimer = StartCoroutine(ReFireTimer()); //Auto refire
+         
+    }
+    protected virtual bool CanAttack(float percent)
+    {
+        return !_isOnCoolDown && percent >= minChargePercent; 
+    }
+
+    protected abstract void Attack(float percent);
+}
