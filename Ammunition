@@ -5,23 +5,22 @@ using UnityEngine;
 
 public class Ammunition : MonoBehaviour
 {
-    
+    //public ScoreManager scoreManager;
 
-    private int Ammo; // Ammo variable
-    public TextMeshProUGUI AmmoText; // variable for the ammo  text 
+    private int Ammo; // Ammo variable 
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.tag == "Player")
-        {
-            Ammo++;
-            Destroy(this.gameObject);//get rid of ammo as soon as it's collected 
-
-            Vector3 randomPosition = new Vector3(Random.Range(-4, 4), 0, Random.Range(-4, 4)); 
-            //spawns the ammo randomly in the plane
-            Instantiate(gameObject, randomPosition, Quaternion.identity);
-            AmmoText.text = "Ammo: " + Ammo.ToString();// to print the score on the left side of the game
-            Debug.Log("Ammo: " + Ammo++);//message saying that the ammo is collected
+            if (other.transform.tag == "Player")
+            {
+                Ammo++;
+                Destroy(this.gameObject);//get rid of ammo as soon as it's collected 
+                Vector3 randomPosition = new Vector3(Random.Range(-4, 4), 0, Random.Range(-4, 4)); //spawns the ammo randomly in the plane
+                Instantiate(gameObject, randomPosition, Quaternion.identity);
+                Debug.Log("Ammo: " + Ammo++);//message saying that the ammo is collected
+            }
         }
-    }
+   
+
+       
 }
