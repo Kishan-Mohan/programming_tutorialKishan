@@ -8,9 +8,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 //using static UnityEngine.UIElements.UxmlAttributeDescription;
 
-public class Player : MonoBehaviour
+public class Player : PickupAndDrop 
 {
-
+    [SerializeField] private WeaponsBase myWeapon;
+    private bool weaponShootToggle; 
 
     [SerializeField] public float speed; // speed of the cube 
     [SerializeField] public float jumpForce; //height of the cube when it jumps 
@@ -26,31 +27,53 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform lookAtPoint;
 
     [Header("Shooting")]
-    public int maxAmmo = 10; // max ammo variable
-    public int currentAmmo; // current ammo variable 
+    //public int maxAmmo = 10; // max ammo variable
+   // public int currentAmmo; // current ammo variable 
     public float reloadTime = 1f; //setting the reload time 
     private bool isReloading = false; //variable to confirm if the player is reloading 
-    [SerializeField] private Rigidbody bulletPrefab; // bullet 3d sprite
+
+    [SerializeField] private Rigidbody bulletPrefab;// .50 calliber bullet prefab 3d sprite
+    [SerializeField] private Rigidbody bulletPrefab1;// Lazer bullet prefab 3d Sprite 
+    [SerializeField] private Rigidbody bulletPrefab2;// ShotgunRound bullet prefab 3d Sprite 
+
     [SerializeField] private float bulletForce; //the force on how far the bullet is flying after one left mouse click
 
     [Header("Player UI")]
     [SerializeField] private Image healthBar; //image of the health bar
+    [SerializeField] private Image ammoBar; //image of the ammo bar 
     [SerializeField] private TextMeshProUGUI shotsFired; //shots fired text
     [SerializeField] private float maxHealth; // variable for max health
+    [SerializeField] private float maxAmmo = 10;  //maximum Ammo holding 
+    [SerializeField] private float currentAmmo;  //current ammo stored 
     private int shotsFiredCounter; // variable for the shots fired counter
     private float _health; // variable for health
+    private float _ammo; // variable for ammo
 
+    [Header("Sound")]
+    public AudioSource source;
+    public AudioClip clip; 
+      
     private float Health
     {
         get => _health; // getting health 
         set
         {
             _health = value;
-            healthBar.fillAmount = _health / maxHealth; // setting the max fill amount on the health bar 
+            healthBar.fillAmount = _health / maxHealth; 
+            // setting the max fill amount on the health bar 
         }
     }
 
-   
+    private float Ammo
+    {
+        get => _ammo; // getting ammo
+        set
+        {
+            _ammo = value;
+            ammoBar.fillAmount = _ammo / maxAmmo;
+            //setting the max fill amount on the ammo bar 
+        }
+    }
     private Vector2 currentRotation; //to show that rotation is the current rotation
 
     private Rigidbody rb; //rigidbody = gravity for the cube 
@@ -58,6 +81,8 @@ public class Player : MonoBehaviour
     private bool isGrounded; //cube is on or off the ground
   
     private int coinCount; //counting the coins you collect 
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -68,6 +93,9 @@ public class Player : MonoBehaviour
 
         Health = maxHealth; // health is set to the max health when game starts
         currentAmmo = maxAmmo; //setting that current ammo equals to the max ammo
+
+        
+    
     }
 
     // Update is called once per frame
@@ -90,6 +118,7 @@ public class Player : MonoBehaviour
             //The Math to calculate the jump height and when the cube lands on the ground
         }
 
+
         if (Input.GetKeyDown(KeyCode.R) && currentAmmo <= 0)
         {
             Reload(); 
@@ -98,6 +127,16 @@ public class Player : MonoBehaviour
         }
 
         Health -= Time.deltaTime * 5; // health is decreasing every delta time times 5 
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            print("drop item"); 
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            print("Pickup item");
+        }
+
     }
       
     public void SetMovementDirection(Vector3 newDirection)
@@ -153,7 +192,26 @@ public class Player : MonoBehaviour
     public void Shoot()
     {
 
-        currentAmmo--; 
+        print("I shot: " + InputManager.GetCameraRay());
+        myWeapon.StartShooting();
+        myWeapon.StopShooting();
+        if (weaponShootToggle)
+        {
+            source.PlayOneShot(clip);
+            myWeapon.StartShooting();
+            --currentAmmo;
+            
+        }
+        else
+        {
+            myWeapon.StopShooting();
+        }
+
+        
+        if (currentAmmo == -currentAmmo)
+        {
+            Reload(); 
+        } 
         // showing a counter that the current ammo will decrease by 1 everytime player fires
         
         Rigidbody currentProjectile = Instantiate(bulletPrefab, transform.position, Quaternion.identity); 
@@ -167,15 +225,24 @@ public class Player : MonoBehaviour
         shotsFired.text = shotsFiredCounter.ToString(); //text of shots fired
 
        Destroy(currentProjectile.gameObject, 4); //Destory after 4 seconds
-        
     }
     public void Reload()
     {
-        isReloading = true; // player is reloading 
+       
+        if (isReloading)
+        {
+            isReloading = true; // player is reloading 
+            print("reloading..."); // prints in console that player is reloading
+            currentAmmo = maxAmmo; // set the ammo back to max
+        }
+        else
+        {
+            isReloading = false; //stop reloading after ammo is back to max 
+            //gun is not reloading 
+            print("Gun is not reloading");  
+        }
         
-        print("reloading..."); // prints in console that player is reloading 
-
-        currentAmmo = maxAmmo; // set the ammo back to max
-        isReloading = false; //stop reloading after ammo is back to max 
+        
     }
+
 }
