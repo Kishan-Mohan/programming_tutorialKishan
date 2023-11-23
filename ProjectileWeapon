@@ -1,17 +1,39 @@
 using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//[Flags]
+public enum projectileChoice
+{
+    Regular = 1,
+    Fire = 2,
+    Lazer = 4,
+}
 public class ProjectileWeapon : WeaponsBase
 {
     [SerializeField] private Rigidbody f; //rigidbody
     [SerializeField] private float force = 50; //force variable 
+
+    [SerializeField] private static ProjectileWeapon Stats;
+
+    
     protected override void Attack(float percent)
     {
         Debug.Log("My weapon attacked: " + percent); //console print statement
         Ray camRay = InputManager.GetCameraRay(); // follow with the camera 
         Rigidbody rb = Instantiate(f, camRay.origin, transform.rotation); //set rigidbody
         rb.AddForce(camRay.direction*force, ForceMode.Impulse); //force of the projectile after player shoots
+
+        if (((int)Stats.BulletType & (int)projectileChoice.Regular) == (int)projectileChoice.Regular)
+        {
+            Debug.Log("FIRE REGULAR BULLETS");
+        }
+        else
+        {
+            Debug.Log("NOT FIRING REGULAR BULLETS");
+        }
     }
+  
 }
