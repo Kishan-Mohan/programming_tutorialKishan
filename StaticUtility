@@ -1,0 +1,25 @@
+
+
+using UnityEngine;
+
+public static class StaticUtility 
+{
+    // 1) animations 
+    public static readonly int xSpeedAnimId = Animator.StringToHash("xSpeed");
+    public static readonly int zSpeedAnimId = Animator.StringToHash("zSpeed");
+    public static readonly int IdleAnimId = Animator.StringToHash("IdleState");
+    public static readonly int AttackAnimId = Animator.StringToHash("AttackState");
+    public static readonly int TurnAnimId = Animator.StringToHash("Turn");
+    public static readonly int IsTurningAnimId = Animator.StringToHash("isTurning");
+
+    // 2) Layers
+    public static readonly int GroundLayer = 1<< Animator.StringToHash("Ground");
+    public static readonly int PlayerLayer = 1<< Animator.StringToHash("Player");
+    public static readonly int EnemyLayer =  1<< Animator.StringToHash("Enemy");
+
+    public static readonly int MoveLayerMask = GroundLayer | EnemyLayer | PlayerLayer;
+    public static readonly int AttackLayers = EnemyLayer | GroundLayer;
+
+    // 3) Shaders
+    public static readonly int Color = Shader.PropertyToID("_Color"); 
+}
