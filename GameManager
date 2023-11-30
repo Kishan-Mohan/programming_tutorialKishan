@@ -1,0 +1,17 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro.EditorUtilities;
+using UnityEngine;
+
+public class GameManager : MonoBehaviour
+{
+   /* void StartGame()
+    {
+        TMP_UIStyleManager.instance.GameStart(); 
+    }
+    void GameOver()
+    {
+        TMP_UIStyleManager.instance.GameOver();
+        ScoreManager.instance.StopScore(); 
+    }*/ 
+}
