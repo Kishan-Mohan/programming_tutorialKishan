@@ -1,0 +1,28 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class player : MonoBehaviour
+{
+    [SerializeField] private float speed;
+    [SerializeField] private float time;
+    private Rigidbody rb;
+    private Vector3 _moveDirection; 
+    
+    // Start is called before the first frame update
+    void Start()
+    {
+        BallController ballController = GetComponent<BallController>(); 
+        //used to call Init method from InputManager class
+        BallController.Init(myplayer: this);
+        //used to call SetGameControls method from InputManager class
+        rb = GetComponent<Rigidbody>(); 
+        //used to call GetComponent method from InputManager class
+    }
+
+    public void SetMovementDirection(Vector3 newDirection)
+    {
+        _moveDirection = newDirection; 
+    }
+
+}
