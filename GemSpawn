@@ -1,0 +1,31 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+public class GemSpawn : MonoBehaviour
+{
+
+    public ScoreManager scoreManager;
+
+    private int Gem; // gem variable 
+
+    public TextMeshProUGUI CoinText; // variable for the coin  text 
+    public TextMeshProUGUI ScoreText; //varaibel for the score text 
+    public TextMeshProUGUI MaxScoreText; // variable for the maxscore text 
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.transform.tag == "Player")
+        {
+            Gem++;
+            Destroy(this.gameObject);//get rid of coin as soon as it's collected 
+            Vector3 randomPosition = new Vector3(Random.Range(-4, 4), 0, Random.Range(-4, 4)); //spawns the coin randomly in the plane
+            Instantiate(gameObject, randomPosition, Quaternion.identity);
+            CoinText.text = "Gem: " + Gem.ToString();// to print the score on the left side of the game
+            Debug.Log("Gem: " + Gem++);//message saying that the coin is collected
+                                         //other.SendMessage("ScoreAdd");
+                                         // scoreManager.AddScore(1); 
+        }
+    }
+}
